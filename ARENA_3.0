@@ -1,6 +1,6 @@
 ### ARENA [slack channel](https://join.slack.com/t/arena-uk/shared_invite/zt-3d3sro2sn-lACCkkoA3Sjm8J0pvWSaGQ)
 
-* Please report any errors/concerns with the material in #errata.
+this holds the official arena repo + my files. solutions + notes are in .py files for that section. :p
 
 # Install Instructions
 
