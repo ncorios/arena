@@ -70,11 +70,11 @@ pts_a = np.array([[0.0, 0.0], [3.0, 0.0]])                # (2, 2)
 pts_b = np.array([[0.0, 4.0], [0.0, 0.0], [6.0, 0.0]])    # (3, 2)
 
 # TODO: differences of every a-point vs every b-point -> shape (2, 3, 2)
-#       hint: pts_a[:, None, :] - pts_b[None, :, :]
-diffs = ...
+#       
+diffs = pts_a[:, None, :] - pts_b[None, :, :]   # "a b c -> a 1 b c" minus "a b c -> 1 a b c"
 # TODO: Euclidean distance over the last axis -> shape (2, 3)
-#       hint: np.linalg.norm(..., axis=-1)
-dists = ...
+#       
+dists = np.linalg.norm(diffs, axis=-1)
 
 assert diffs.shape == (2, 3, 2)
 assert dists.shape == (2, 3)
@@ -92,11 +92,11 @@ print("1.2", dists.tolist())
 M = np.arange(12).reshape(3, 4)
 
 # TODO: sum down each column (collapse the row axis) -> shape (4,)
-col_sums = ...
+col_sums = M.sum(axis= 0)
 # TODO: mean across each row -> shape (3,)
-row_means = ...
+row_means = M.mean(axis= 1)
 # TODO: max of each column, KEEPING dims -> shape (1, 4)
-col_max_keepdims = ...
+col_max_keepdims = M.max(axis = 0, keepdims= True)
 
 assert col_sums.shape == (4,) and row_means.shape == (3,)
 assert col_max_keepdims.shape == (1, 4)
