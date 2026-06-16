@@ -112,13 +112,12 @@ print("1.3", col_sums.tolist(), row_means.tolist(), col_max_keepdims.tolist())
 x = np.array([4, 1, 7, 3, 9, 2, 8])
 
 # TODO: boolean mask of elements strictly greater than 4
-mask = ...
+mask = x > 4
 # TODO: how many elements are > 4 (use the mask, no loop)
-count_gt4 = ...
+count_gt4 = mask.sum()
 # TODO: a copy of x where every element > 4 is set to 0, others unchanged
 #       hint: np.where(cond, a, b)  OR  copy then mask-assign
-clipped = ...
-
+clipped = np.where(x > 4, 0, x)
 assert int(count_gt4) == 3
 assert clipped.tolist() == [4, 1, 0, 3, 0, 2, 0]
 print("1.4", int(count_gt4), clipped.tolist())
@@ -133,11 +132,11 @@ print("1.4", int(count_gt4), clipped.tolist())
 y = np.arange(6)
 
 # TODO: reshape to (2, 3)
-y23 = ...
+y23 = y.reshape(2,3)
 # TODO: reshape to (3, 2), using -1 to let numpy infer one dimension
-y32 = ...
+y32 = y.reshape(3,-1)
 # TODO: the transpose of y23 (also shape (3,2)) — note it != y32
-y23_T = ...
+y23_T = y23.transpose()
 
 assert y23.shape == (2, 3) and y32.shape == (3, 2) and y23_T.shape == (3, 2)
 assert not np.array_equal(y32, y23_T)   # the teaching point
