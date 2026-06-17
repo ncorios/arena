@@ -155,14 +155,14 @@ print("1.5", y23.tolist(), y32.tolist(), y23_T.tolist())
 
 # %%
 # TODO: 1-D tensor [0, 1, ..., 9]
-ar = ...                       # t.arange
+ar = t.arange(10)
 # TODO: 5 evenly spaced values from 0 to 1 INCLUSIVE
-ls = ...                       # t.linspace
+ls = t.linspace(0,1,5)
 # TODO: 3x3 identity matrix
-I3 = ...                       # t.eye
+I3 = t.eye(3,3)
 np_arr = np.array([1.0, 2.0, 3.0])
 # TODO: turn np_arr into a torch tensor (sharing memory)
-from_np = ...                  # t.from_numpy
+from_np = t.from_numpy(np_arr)
 
 assert ar.tolist() == list(range(10))
 assert t.allclose(ls, t.tensor([0.0, 0.25, 0.5, 0.75, 1.0]))
@@ -178,9 +178,9 @@ print("2.1", ar.tolist(), ls.tolist(), from_np.tolist())
 T = t.arange(12).reshape(3, 4).float()
 
 # TODO: sum over dim 0 -> shape (4,)
-sum_dim0 = ...
+sum_dim0 = t.sum(T, dim=0)
 # TODO: index of the max along dim 1 -> shape (3,)
-argmax_dim1 = ...
+argmax_dim1 = t.argmax(T, dim=1)
 
 assert sum_dim0.tolist() == [12.0, 15.0, 18.0, 21.0]
 assert argmax_dim1.tolist() == [3, 3, 3]
@@ -197,9 +197,9 @@ print("2.2", sum_dim0.tolist(), argmax_dim1.tolist())
 x = t.tensor(2.0, requires_grad=True)
 
 # TODO: compute f = x^2 + 3x
-f = ...
+f = x**2 + 3*x
 # TODO: run backpropagation (one line)
-...
+f.backward()
 
 assert x.grad.item() == 7.0
 print("2.3", f.item(), x.grad.item())
@@ -211,19 +211,19 @@ print("2.3", f.item(), x.grad.item())
 #  week 1. (Quiz yourself, then ask me to check them.)
 #
 #   Q1. At a high level, what is a torch.Tensor?
-#       A:
+#       A: array that can run on gpu
 #   Q2. What is an nn.Parameter, and what is an nn.Module?
-#       A:
+#       A: no clue
 #   Q3. When you call .backward(), where do the gradients get stored?
-#       A:
+#       A: t.grad
 #   Q4. What is a loss function — what does it take in, what does it return?
-#       A:
+#       A: idk u didnt explain
 #   Q5. What does an optimizer do?
-#       A:
+#       A: idk u didnt explain
 #   Q6. Parameter vs hyperparameter — what's the difference?
-#       A:
+#       A: idk u didnt explain
 #   Q7. Give three examples of hyperparameters.
-#       A:
+#       A: idk u didnt explain
 
 
 # %% [markdown]
@@ -242,9 +242,9 @@ print("2.3", f.item(), x.grad.item())
 img = t.arange(2 * 3 * 4).reshape(2, 3, 4)   # (batch=2, h=3, w=4)
 
 # TODO: swap the last two axes -> (2, 4, 3)
-swapped = ...                                 # "b h w -> b w h"
+swapped = einops.rearrange(img, "a b c -> a c b")                                # "b h w -> b w h"
 # TODO: flatten h and w into one axis -> (2, 12)
-flat = ...                                    # "b h w -> b (h w)"
+flat = einops.rearrange(img,"a b c -> a (b c)")                                    # "b h w -> b (h w)"
 
 assert tuple(swapped.shape) == (2, 4, 3)
 assert tuple(flat.shape) == (2, 12)
@@ -257,10 +257,10 @@ print("3.1", tuple(swapped.shape), tuple(flat.shape))
 #  (batch, channel, height, width).
 
 # %%
-imgs = t.zeros(8, 32, 32, 3)
+imgs = t.zeros(8, 32, 32, 3) # b h w c
 
 # TODO: rearrange to (batch, channel, height, width)
-imgs_chw = ...                                # "b h w c -> b c h w"
+imgs_chw = einops.rearrange(imgs, "b h w c -> b c h w")                              # "b h w c -> b c h w"
 
 assert tuple(imgs_chw.shape) == (8, 3, 32, 32)
 print("3.2", tuple(imgs_chw.shape))
@@ -275,9 +275,9 @@ print("3.2", tuple(imgs_chw.shape))
 feat = t.arange(2 * 3 * 4).reshape(2, 3, 4).float()
 
 # TODO: mean over the last axis -> (2, 3)
-mean_last = ...                               # einops.reduce(feat, "b h w -> b h", "mean")
+mean_last = einops.reduce(feat, " a b c -> a b", "mean")                             # einops.reduce(feat, "b h w -> b h", "mean")
 # TODO: max over the MIDDLE axis -> (2, 4)
-max_mid = ...                                 # "b h w -> b w", "max"
+max_mid = einops.reduce(feat, " a b c -> a c", "max")                                 # "b h w -> b w", "max"
 
 assert mean_last.tolist() == [[1.5, 5.5, 9.5], [13.5, 17.5, 21.5]]
 assert max_mid.tolist() == [[8.0, 9.0, 10.0, 11.0], [20.0, 21.0, 22.0, 23.0]]
@@ -292,7 +292,7 @@ print("3.3", mean_last.tolist(), max_mid.tolist())
 v = t.tensor([1, 2, 3])
 
 # TODO: tile v into a (4, 3) matrix, each row = [1, 2, 3]
-tiled = ...                                   # "w -> h w", h=4
+tiled = einops.repeat(v, " b -> a b", a = 4 )                                   # "w -> h w", h=4
 
 assert tiled.tolist() == [[1, 2, 3]] * 4
 print("3.4", tiled.tolist())
@@ -308,13 +308,13 @@ A = t.arange(6).reshape(2, 3).float()
 B = t.arange(12).reshape(3, 4).float()
 
 # TODO: matrix multiply A and B via einops.einsum -> (2, 4)
-AB = ...                                      # "i j, j k -> i k"
+AB = einops.einsum(A, B, " a b, b c -> a c ")                                      # "i j, j k -> i k"
 assert t.allclose(AB, A @ B)
 
 u = t.tensor([[1.0, 0.0, 0.0], [0.0, 2.0, 0.0]])   # (2, 3)
 w = t.tensor([[1.0, 1.0, 1.0], [3.0, 4.0, 5.0]])   # (2, 3)
 # TODO: row-wise dot product -> shape (2,) = [u0·w0, u1·w1]
-dots = ...                                    # "b i, b i -> b"
+dots = einops.einsum(u, w, " a b, a b -> a")                                   # "b i, b i -> b"
 
 assert dots.tolist() == [1.0, 8.0]
 print("3.5", AB.tolist(), dots.tolist())
@@ -332,11 +332,11 @@ print("3.5", AB.tolist(), dots.tolist())
 dirs = t.tensor([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0], [2.0, 0.0], [3.0, 4.0]])  # (5, 2)
 
 # TODO: length (L2 norm) of each direction -> shape (5,)
-lengths = ...                                 # t.linalg.norm(dirs, dim=-1)
+lengths = t.linalg.norm(dirs, axis=1)                                # t.linalg.norm(dirs, dim=-1)
 # TODO: normalize each direction to unit length -> shape (5, 2)
 #       careful: lengths is (5,); you need (5, 1) to divide a (5, 2). Use
 #       lengths[:, None]  or  lengths.unsqueeze(-1).
-unit_dirs = ...
+unit_dirs = dirs/lengths[:, None]
 
 assert t.allclose(lengths, t.tensor([1.0, 1.0, 2.0**0.5, 2.0, 5.0]))
 assert t.allclose(t.linalg.norm(unit_dirs, dim=-1), t.ones(5))
@@ -353,9 +353,9 @@ print("4.1", [round(v, 3) for v in lengths.tolist()])
 #
 #   TODO (answer in comments):
 #     a) Float[Tensor, "batch channels height width"]
-#        -> what does this describe?  A:
+#        -> what does this describe?  A: (4,) tensor image
 #     b) write the annotation for "a boolean tensor of shape (n, n)"
-#        -> A:  Bool[Tensor, "..."]   (fill in the ...)
+#        -> A:  Bool[Tensor, NO CLUE U DIDNT TEACH]   (fill in the ...)
 #
 #  No asserts here — just get comfortable parsing the strings.
 
