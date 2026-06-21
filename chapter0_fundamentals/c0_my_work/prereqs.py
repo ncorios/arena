@@ -332,7 +332,7 @@ print("3.5", AB.tolist(), dots.tolist())
 dirs = t.tensor([[1.0, 0.0], [0.0, 1.0], [1.0, 1.0], [2.0, 0.0], [3.0, 4.0]])  # (5, 2)
 
 # TODO: length (L2 norm) of each direction -> shape (5,)
-lengths = t.linalg.norm(dirs, axis=1)                                # t.linalg.norm(dirs, dim=-1)
+lengths = t.linalg.norm(dirs, dim=1)                                # t.linalg.norm(dirs, dim=-1)
 # TODO: normalize each direction to unit length -> shape (5, 2)
 #       careful: lengths is (5,); you need (5, 1) to divide a (5, 2). Use
 #       lengths[:, None]  or  lengths.unsqueeze(-1).
