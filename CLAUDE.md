@@ -171,4 +171,31 @@ Add `multiprocessing_context="fork"` to any DataLoader to avoid crashes.
 
 ---
 
-*last updated: June 2026, start of MISTI*
+## Cloud setup (for GPU chapters — ch0.5 onward)
+
+**when:** mac handles ch0.0–0.4. first GPU need is ch0.5 (VAEs/GANs), then ch1+. not a now concern.
+
+**provider:** VastAI (rent one GPU box by the hour). RunPod also works — arena's install.sh supports both.
+
+**setup, once a box is rented:**
+
+1. clone on the branch the install script expects — note it's `alignment-science`, NOT `main`:
+```bash
+   git clone -b alignment-science https://github.com/callummcdougall/ARENA_3.0.git
+```
+2. run the install script for the platform:
+```bash
+   bash ARENA_3.0/install.sh --platform vastai    # omit flag for runpod
+```
+   THIS is the script that refuses to run on mac — it's built for exactly this environment (linux + CUDA). it installs miniconda, makes a conda env `arena-env` (python 3.11), pip-installs the full requirements (CUDA torch, jax, brax, envpool…), and writes VS Code workspace settings. add `--no-llm-context` to skip cloning the helper repo.
+3. connect from mac's VS Code via Remote-SSH (`~/.ssh/config` host entry → the box's ip/port from vastai). edit + run exactly like local; code executes on the GPU.
+
+**GPU pick:** a single 3090/4090-class card covers ch0.5–ch1. ch4 has a couple sections that want an A100 — rent that only for those.
+
+**discipline (where money leaks):**
+- push to `origin` (github.com/ncorios/arena) BEFORE stopping/destroying the box. box is disposable; repo is not.
+- stop the instance the second you're done — you pay while it runs.
+- conda env lives on the box, not the repo. destroy the box → re-run install.sh next time (~10 min, expected).
+
+
+*last updated: June 20 2026,*
