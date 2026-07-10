@@ -148,8 +148,8 @@ Add `multiprocessing_context="fork"` to any DataLoader to avoid crashes.
 
 *Update this section as chapters are completed.*
 
-- [ ] ch0.0 prereqs
-- [ ] ch0.1 ray tracing
+- [x] ch0.0 prereqs
+- [x] ch0.1 ray tracing
 - [ ] ch0.2 CNNs & ResNets
 - [ ] ch0.3 optimization
 - [ ] ch0.4 backpropagation
@@ -159,7 +159,7 @@ Add `multiprocessing_context="fork"` to any DataLoader to avoid crashes.
 - [ ] ch3 evals
 - [ ] ch4 alignment science
 
-**last worked on:** setting up repo, git remotes configured, about to start ch0.0
+**last worked on:** finished ch0.1 ray tracing (Jul 9 2026). next: ch0.2 CNNs & ResNets
 
 ---
 
